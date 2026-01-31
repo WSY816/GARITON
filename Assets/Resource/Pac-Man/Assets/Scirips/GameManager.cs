@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
     public int score = 0;//得分
 
     [Header("UI引用")]
-    public Image faceImage;        // 拖入 FaceDisplay 的 Image 组件
+    public SpriteRenderer playerSpriteRenderer; // 拖入玩家身上挂载 SpriteRenderer 的物体
     public float WaitTime;//倒计时的时间间隔
     public Transform countDownAnchor; // 倒计时出现的位置
 
@@ -173,15 +173,20 @@ public class GameManager : MonoBehaviour
                 Destroy(currentCountDown);
             }
 
-            // 5. 判断脸部状态
-            if (faceImage != null && faceImage.sprite != null)
+            // 5. 【核心判断】：改为检测 SpriteRenderer
+            if (playerSpriteRenderer != null && playerSpriteRenderer.sprite != null)
             {
-                if (faceImage.sprite.name == "Cry")
+                // 检测玩家物体当前的 Sprite 名字是否为 "Cry"
+                if (playerSpriteRenderer.sprite.name == "Cry")
                 {
-                    PlayAlive = false; // 标记玩家死亡
+                    PlayAlive = false;
                     OnGameOverByCryFace();
                     yield break;
                 }
+            }
+            else
+            {
+                Debug.LogWarning("GameManager 上的 playerSpriteRenderer 引用丢失！");
             }
         }
     }
