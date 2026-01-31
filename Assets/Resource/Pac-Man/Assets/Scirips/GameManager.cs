@@ -296,9 +296,17 @@ public class GameManager : MonoBehaviour
         //Inky.GetComponent<GhostMove>().enabled = state;
     }
 
-    public void Win()
+    public void Win(string nextSceneName)
     {
-        SceneManager.LoadScene("Game 1");
+        // 如果没有输入名字，可以设置一个默认值，或者直接根据参数跳转
+        if (!string.IsNullOrEmpty(nextSceneName))
+        {
+            SceneManager.LoadScene(nextSceneName);
+        }
+        else
+        {
+            Debug.LogError("未指定要加载的场景名称！");
+        }
     }
 
 }
