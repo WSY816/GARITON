@@ -1,107 +1,113 @@
-﻿
-using System.Collections.Generic;
-
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GhostMove : MonoBehaviour
 {
-    public GameObject[] paths; //存放敌人移动路径
+    public GameObject[] paths;
+    public float speed = 0.4f;
 
-    public float speed = 0.4f;//敌人速度
-    //public Transform[] Waypoint;
+    [Header("碰撞设置")]
+    public LayerMask wallLayer; // 在 Inspector 中设置为 "Wall" 所在的图层
+    public float detectRadius = 0.3f; // 检测半径，根据幽灵大小调整
+
     [SerializeField]
-    private List<Vector3> Waypoint = new List<Vector3>(); //存放敌人准备移动的坐标点
+    private List<Vector3> Waypoint = new List<Vector3>();
     private int index = 0;
-    private Vector3 x;//记录起始位置的变量
+    private Vector3 x;
 
-    
-
-    private void getPath(GameObject path)//获取到敌人具体的哪条路径
+    private void getPath(GameObject path)
     {
-        Waypoint.Clear(); // 必须清空旧路径！
+        Waypoint.Clear();
         foreach (Transform t in path.transform)
         {
-
-            Waypoint.Add(t.position);//一次将路径点存入Waypoint三维向量中
+            Waypoint.Add(t.position);
         }
-        //Waypoint.Insert(0, x);//插入起始位置
-        //Waypoint.Add(x);//插入末尾位置
-
-        Debug.Log(path.gameObject.name);
-
     }
 
     private void Start()
     {
-        //x = transform.position + new Vector3(0, 3, 0);//设置初始位置偏移值
-
-        //起始位置避免重复路径
+        x = transform.position; // 记录出生点（原代码逻辑中 x 未初始化，这里补齐）
         getPath(paths[GameManager.Instance.usingIndex[GetComponent<SpriteRenderer>().sortingOrder - 1]]);
-
     }
 
     private void FixedUpdate()
     {
         if (Waypoint.Count == 0) return;
-        //敌人进行移动主代码
-        if (transform.position != Waypoint[index])//如果没有到达目的路径点则继续进行移动
-        {
-            Debug.Log("Moving to: " + Waypoint[index]);
-            //对起始位置与目的位置进行插值
-            Vector2 temp = Vector2.MoveTowards(transform.position, Waypoint[index], speed);
-            //移动到插值位置
-            GetComponent<Rigidbody2D>().MovePosition(temp);
 
-        }
-        else//如果到达目的路径点，则选择下一个目的路径点
+        // 1. 计算移动方向
+        Vector2 targetPos = Waypoint[index];
+        Vector2 currentPos = transform.position;
+        Vector2 dir = (targetPos - currentPos).normalized;
+
+        // 2. --- 核心修改：墙壁检测 ---
+        // 使用 CircleCast 像手电筒一样照一下前方是否有 Wall 图层的东西
+        float distToTarget = Vector2.Distance(currentPos, targetPos);
+        RaycastHit2D hit = Physics2D.CircleCast(currentPos, detectRadius, dir, speed, wallLayer);
+
+        if (hit.collider != null)
         {
-            
+            // 如果撞到了墙，说明这条路不通，直接切换到下一个路径点，防止卡死在墙边
+            Debug.Log("前面有墙，切换路径点");
             index++;
-            //如果所有目的路径点移动完毕，则随机获取新的一条路径
-            if (index >= Waypoint.Count)
-            {
-                index = 0;
-  
-                getPath(paths[Random.Range(0,paths.Length)]);
-            }
+            CheckIndex();
+            return;
         }
 
-        Vector2 dir = Waypoint[index] - transform.position;
-        GetComponent<Animator>().SetFloat("DirX", dir.x);//通知动画左右移动状态机
-        GetComponent<Animator>().SetFloat("DirY", dir.y);//通知动画上下移动状态机
+        // 3. 正常移动逻辑
+        if (transform.position != Waypoint[index])
+        {
+            Vector2 temp = Vector2.MoveTowards(transform.position, Waypoint[index], speed);
+            GetComponent<Rigidbody2D>().MovePosition(temp);
+        }
+        else
+        {
+            index++;
+            CheckIndex();
+        }
+
+        // 4. 设置动画
+        Vector2 animDir = Waypoint[index] - transform.position;
+        GetComponent<Animator>().SetFloat("DirX", animDir.x);
+        GetComponent<Animator>().SetFloat("DirY", animDir.y);
+    }
+
+    // 提取出来的索引检查逻辑
+    private void CheckIndex()
+    {
+        if (index >= Waypoint.Count)
+        {
+            index = 0;
+            getPath(paths[Random.Range(0, paths.Length)]);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.name == "Pacman")//如果与吃豆人发生碰撞检测
+        if (collision.gameObject.name == "Pacman")
         {
-            if (GameManager.Instance.isSuperPacman)//如果是超级吃豆人
+            if (GameManager.Instance.isSuperPacman)
             {
-                gameObject.transform.position = x - new Vector3(0, 3, 0);//返回出生地点
+                // 回到出生点
+                gameObject.transform.position = x;
                 index = 0;
                 GameManager.Instance.score += 500;
             }
             else
             {
-                Debug.Log("Game Over");//游戏结束                                
-                GameManager.Instance.PlayAlive = false;// 玩家被幽灵碰到时设为死亡
-                collision.gameObject.SetActive(false);//停止吃豆人移动
-                GameManager.Instance.gamePanel.SetActive(false);//隐藏游戏界面
-                Instantiate(GameManager.Instance.gameoverPrefab);//实例化gameover
-                Invoke("ReStart", 3f);//延迟3s后重新开始
-                this.enabled = false;//停止敌人移动脚本
-
+                Debug.Log("Game Over");
+                GameManager.Instance.PlayAlive = false;
+                collision.gameObject.SetActive(false);
+                GameManager.Instance.gamePanel.SetActive(false);
+                Instantiate(GameManager.Instance.gameoverPrefab);
+                Invoke("ReStart", 3f);
+                this.enabled = false;
             }
-            
         }
     }
 
     private void ReStart()
     {
-        SceneManager.LoadScene(0);//重新加载场景
+        SceneManager.LoadScene(0);
     }
-
-
-
 }

@@ -1303,7 +1303,11 @@ MonoBehaviour:
   - {fileID: 801130870}
   - {fileID: 801130870}
   - {fileID: 801130870}
-  speed: 0.1
+  speed: 2.05
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  detectRadius: 0.3
   Waypoint: []
 --- !u!212 &814441485
 SpriteRenderer:
