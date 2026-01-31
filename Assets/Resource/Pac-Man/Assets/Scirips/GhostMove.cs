@@ -10,10 +10,12 @@ public class GhostMove : MonoBehaviour
 
     public float speed = 0.4f;//敌人速度
     //public Transform[] Waypoint;
-
+    [SerializeField]
     private List<Vector3> Waypoint = new List<Vector3>(); //存放敌人准备移动的坐标点
     private int index = 0;
     private Vector3 x;//记录起始位置的变量
+
+    
 
     private void getPath(GameObject path)//获取到敌人具体的哪条路径
     {
@@ -23,9 +25,10 @@ public class GhostMove : MonoBehaviour
 
             Waypoint.Add(t.position);//一次将路径点存入Waypoint三维向量中
         }
-        Waypoint.Insert(0, x);//插入起始位置
-        Waypoint.Add(x);//插入末尾位置
+        //Waypoint.Insert(0, x);//插入起始位置
+        //Waypoint.Add(x);//插入末尾位置
   
+        Debug.Log(path.gameObject.name);
 
     }
 
@@ -44,6 +47,7 @@ public class GhostMove : MonoBehaviour
         //敌人进行移动主代码
         if (transform.position != Waypoint[index])//如果没有到达目的路径点则继续进行移动
         {
+            Debug.Log("Moving to: " + Waypoint[index]);
             //对起始位置与目的位置进行插值
             Vector2 temp = Vector2.MoveTowards(transform.position, Waypoint[index], speed);
             //移动到插值位置
@@ -80,11 +84,13 @@ public class GhostMove : MonoBehaviour
             }
             else
             {
+                Debug.Log("Game Over");//游戏结束                                
+                GameManager.Instance.PlayAlive = false;// 玩家被幽灵碰到时设为死亡
                 collision.gameObject.SetActive(false);//停止吃豆人移动
                 GameManager.Instance.gamePanel.SetActive(false);//隐藏游戏界面
                 Instantiate(GameManager.Instance.gameoverPrefab);//实例化gameover
                 Invoke("ReStart", 3f);//延迟3s后重新开始
-
+                this.enabled = false;//停止敌人移动脚本
 
             }
             

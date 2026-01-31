@@ -49,14 +49,19 @@ public class GameManager : MonoBehaviour
     [Header("迷宫")]
     public string mazeName;//迷宫名称
 
+    [Header("Player")]
+    public bool PlayAlive = true; //玩家是否存活
+
     [SerializeField]
     private float CountDownScale = 1.5f; // 倒计时动画的缩放比例
+    private GameObject currentCountDown;//跟踪当前的倒计时物体
 
 
     private void Awake()
     {   
         
         _instance = this;
+        PlayAlive = true; // 每次加载场景时确保玩家是活着的
         Screen.SetResolution(1024, 768, false);
         int temp = pathIndex.Count;
         for(int i=0;i<temp;i++)
@@ -132,40 +137,51 @@ public class GameManager : MonoBehaviour
 
     IEnumerator RepeatLoop()//木头人游戏倒计时循环实现
     {
-        while (true)
+        while (PlayAlive)
         {
-            // 1. 先等待一段时间（比如3秒）再开始倒计时
-            yield return new WaitForSeconds(WaitTime);
-
-            // 2. 产生倒计时/警告动画物体
-            GameObject go = Instantiate(CountDownPrefab);
-            go.transform.localScale = Vector3.one * CountDownScale; // 可以调整大小
-
-
-            // 3. 等待倒计时动画播放完毕（玩家在这3秒内必须变成笑脸）
-            yield return new WaitForSeconds(3f);
-
-            // 4. 倒计时物体消失
-            if (go != null)
+            // 1. 等待 WaitTime 秒，但期间要检查玩家是否还活着
+            float timer = 0;
+            while (timer < WaitTime)
             {
-                go.SetActive(false); // 先隐藏
-                Destroy(go);        // 再销毁
+                if (!PlayAlive) yield break; // 玩家在中途死了，直接退出协程
+                timer += Time.deltaTime;
+                yield return null; // 每一帧检查一次
             }
 
-            // 5. 【核心判断】：直接检测引用的 faceImage
+            // 2. 检查玩家是否还活着再生成
+            if (!PlayAlive) yield break;
+
+            currentCountDown = Instantiate(CountDownPrefab);
+            currentCountDown.transform.localScale = Vector3.one * CountDownScale;
+
+            // 3. 等待倒计时动画播放（3秒），期间也要检查玩家是否还活着
+            float animTimer = 0;
+            while (animTimer < 3f)
+            {
+                if (!PlayAlive)
+                {
+                    if (currentCountDown != null) Destroy(currentCountDown);
+                    yield break;
+                }
+                animTimer += Time.deltaTime;
+                yield return null;
+            }
+
+            // 4. 时间到，销毁倒计时
+            if (currentCountDown != null)
+            {
+                Destroy(currentCountDown);
+            }
+
+            // 5. 判断脸部状态
             if (faceImage != null && faceImage.sprite != null)
             {
-                // 直接判断图片的名称
-                // 请确保 "CryFaceName" 是你哭脸图片在 Unity 里的真实文件名
                 if (faceImage.sprite.name == "Cry")
                 {
+                    PlayAlive = false; // 标记玩家死亡
                     OnGameOverByCryFace();
-                    yield break; // 玩家失败，跳出循环
+                    yield break;
                 }
-            }
-            else
-            {
-                Debug.LogWarning("GameManager 上的 faceImage 引用丢失！");
             }
         }
     }
@@ -173,14 +189,33 @@ public class GameManager : MonoBehaviour
     // 游戏结束的逻辑
     private void OnGameOverByCryFace()
     {
+        PlayAlive = false; // 确保状态更新
+        if (currentCountDown != null) Destroy(currentCountDown); // 清理
+
         Debug.Log("检测到哭脸，游戏结束！");
+        gamePanel.SetActive(false);
+        Instantiate(gameoverPrefab);
+        SetGameState(false);
+        StopAllCoroutines();
+        GetComponent<AudioSource>().Stop();
+    }
 
-        gamePanel.SetActive(false); // 隐藏游戏界面
-        Instantiate(gameoverPrefab); // 显示游戏结束预制体
+    // 当玩家因为任何原因死亡时调用
+    public void KillPlayer()
+    {
+        PlayAlive = false;
 
-        SetGameState(false); // 禁用吃豆人和幽灵的脚本
-        StopAllCoroutines(); // 停止所有正在运行的协程
-        GetComponent<AudioSource>().Stop(); // 停止背景音乐
+        // 立即销毁当前的倒计时物体
+        if (currentCountDown != null)
+        {
+            Destroy(currentCountDown);
+        }
+
+        // 停止协程
+        StopAllCoroutines();
+
+        // 执行其他的死亡逻辑（比如显示 GameOver 界面）
+        // OnGameOverByCryFace(); // 如果共用同一个界面可以调用这个
     }
 
     private void CreateSuperPacdot()//制造超级豆子
