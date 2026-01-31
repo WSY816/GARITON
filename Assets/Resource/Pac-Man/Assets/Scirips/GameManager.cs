@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     //所以游戏对象
     public GameObject Pacman;
     public GameObject Binky;
-    //public GameObject Pinky;
+    public GameObject Pinky;
     //public GameObject Clyde;
     //public GameObject Inky;
 
@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     public GameObject CountDownPrefab;//游戏倒计时动画
     public GameObject gameoverPrefab;//游戏失败界面
     public GameObject winPrefab;//游戏成功界面
-    public AudioClip startClip;//游戏音乐
+    //public AudioClip startClip;//游戏音乐
     public Text remainText;
     public Text scoreText;
     public Text eatText;
@@ -115,7 +115,7 @@ public class GameManager : MonoBehaviour
     public void OnStartButtom()//按下开始游戏
     {
         PlayStart();
-        AudioSource.PlayClipAtPoint(startClip, new Vector3(0,0,-9));//播放开始音乐
+        //AudioSource.PlayClipAtPoint(startClip, new Vector3(0,0,-9));//播放开始音乐
         startPanel.SetActive(false);//按下开始游戏后开始界面隐藏
         
         
@@ -264,24 +264,24 @@ public class GameManager : MonoBehaviour
     public void FreezeEnemy()//冻结敌人
     {
         Binky.GetComponent<GhostMove>().enabled = false;
-        //Pinky.GetComponent<GhostMove>().enabled = false;
+        Pinky.GetComponent<GhostMove>().enabled = false;
         //Clyde.GetComponent<GhostMove>().enabled = false;
         //Inky.GetComponent<GhostMove>().enabled = false;
 
         Binky.GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.7f, 0.7f, 0.7f);
-        //Pinky.GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.7f, 0.7f, 0.7f);
+        Pinky.GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.7f, 0.7f, 0.7f);
         //Clyde.GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.7f, 0.7f, 0.7f);
         //Inky.GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.7f, 0.7f, 0.7f);
     }
     public void DisFreeEnemy()//解冻敌人
     {
         Binky.GetComponent<GhostMove>().enabled = true;
-        //Pinky.GetComponent<GhostMove>().enabled = true;
+        Pinky.GetComponent<GhostMove>().enabled = true;
         //Clyde.GetComponent<GhostMove>().enabled = true;
         //Inky.GetComponent<GhostMove>().enabled = true;
 
         Binky.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
-        //Pinky.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+        Pinky.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
         //Clyde.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
         //Inky.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
     }
@@ -291,14 +291,22 @@ public class GameManager : MonoBehaviour
 
         Pacman.GetComponent<PacmanMove>().enabled = state;
         Binky.GetComponent<GhostMove>().enabled = state;
-        //Pinky.GetComponent<GhostMove>().enabled = state;
+        Pinky.GetComponent<GhostMove>().enabled = state;
         //Clyde.GetComponent<GhostMove>().enabled = state;
         //Inky.GetComponent<GhostMove>().enabled = state;
     }
 
-    public void Win()
+    public void Win(string nextSceneName)
     {
-        SceneManager.LoadScene("Game 1");
+        // 如果没有输入名字，可以设置一个默认值，或者直接根据参数跳转
+        if (!string.IsNullOrEmpty(nextSceneName))
+        {
+            SceneManager.LoadScene(nextSceneName);
+        }
+        else
+        {
+            Debug.LogError("未指定要加载的场景名称！");
+        }
     }
 
 }
