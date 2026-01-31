@@ -235,7 +235,7 @@ GameObject:
   - component: {fileID: 325022459}
   - component: {fileID: 325022457}
   - component: {fileID: 325022456}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: TrueMaze
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -768,7 +768,7 @@ MonoBehaviour:
   isSuperPacman: 0
   usingIndex: 
   score: 0
-  faceImage: {fileID: 0}
+  playerSpriteRenderer: {fileID: 395270779}
   WaitTime: 3
   countDownAnchor: {fileID: 342907325}
   mazeName: TrueMaze
@@ -989,7 +989,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.3, y: 5.15, z: 0}
-  m_LocalScale: {x: 0.25347844, y: 0.25347844, z: 0.25347844}
+  m_LocalScale: {x: 0.20530994, y: 0.20530994, z: 0.20530994}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1070,6 +1070,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 0.35
   playerSpriteRenderer: {fileID: 395270779}
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
