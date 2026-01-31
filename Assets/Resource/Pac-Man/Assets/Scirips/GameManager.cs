@@ -129,7 +129,7 @@ public class GameManager : MonoBehaviour
     public void PlayStart() //游戏开始倒计时
     {
         SetGameState(true);//游戏启动
-        //Invoke("CreateSuperPacdot", 5f);//游戏开始后5s,产生超级豆子
+ 
         gamePanel.SetActive(true);//显示游戏界面
         GetComponent<AudioSource>().Play();//播放游戏音乐
         StartCoroutine(RepeatLoop());//开始木头人游戏倒计时循环
@@ -308,5 +308,7 @@ public class GameManager : MonoBehaviour
             Debug.LogError("未指定要加载的场景名称！");
         }
     }
+
+
 
 }

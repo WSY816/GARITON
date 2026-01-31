@@ -18,6 +18,7 @@ public class PacmanMove : MonoBehaviour
         {
             playerSpriteRenderer = GetComponent<SpriteRenderer>();
         }
+
     }
 
     private void FixedUpdate()
@@ -89,4 +90,6 @@ public class PacmanMove : MonoBehaviour
         // 如果你没有设置 LayerMask，请使用原来的逻辑，但要确保障碍物有 BoxCollider2D：
         // return (hit.collider == GetComponent<Collider2D>());
     }
+
+
 }
