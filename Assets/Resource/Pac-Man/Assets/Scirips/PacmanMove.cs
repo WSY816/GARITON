@@ -1,36 +1,42 @@
 ﻿using UnityEngine;
-using UnityEngine.UI; // 【必须添加】用于识别 Image 组件
 
 public class PacmanMove : MonoBehaviour
 {
     public float speed = 0.35f;
     private Vector2 des = Vector2.zero;
 
-    [Header("UI引用")]
-    public Image faceImage;        // 拖入 FaceDisplay 的 Image 组件
+    [Header("玩家图片引用")]
+    // 改为 SpriteRenderer，拖入带有 SpriteRenderer 的物体（通常就是玩家自己）
+    public SpriteRenderer playerSpriteRenderer;
 
     private void Start()
     {
         des = transform.position;
+
+        // 自动初始化：如果没手动拖入，尝试获取自己身上的 SpriteRenderer
+        if (playerSpriteRenderer == null)
+        {
+            playerSpriteRenderer = GetComponent<SpriteRenderer>();
+        }
     }
 
     private void FixedUpdate()
     {
-        // 1. 处理移动（无论是否笑脸，先完成当前的插值移动到格子点）
+        // 1. 处理移动（插值移动到格子点）
         Vector2 temp = Vector2.MoveTowards(transform.position, des, speed);
         GetComponent<Rigidbody2D>().MovePosition(temp);
 
         // 2. 当到达一个格子的中心点时，尝试获取下一个指令
         if ((Vector2)transform.position == des)
         {
-            // --- 【核心修改开始】 ---
+            // --- 【核心逻辑】 ---
 
-            // 首先判断是否可以移动
             bool canMove = true;
-            if (faceImage != null && faceImage.sprite != null)
+            if (playerSpriteRenderer != null && playerSpriteRenderer.sprite != null)
             {
-                // 如果当前图片的名字是笑脸（请把 "SmileFaceName" 替换为你图片的真实名字）
-                if (faceImage.sprite.name == "Smile")
+                // 如果当前图片的名字是 Smile，则不能移动
+                // 请确保你在 PointerRotate 脚本里设置的图片文件名确实叫 "Smile"
+                if (playerSpriteRenderer.sprite.name == "Smile")
                 {
                     canMove = false;
                 }
@@ -57,8 +63,6 @@ public class PacmanMove : MonoBehaviour
                 }
             }
 
-            // --- 【核心修改结束】 ---
-
             // 获取移动方向并设置动画
             Vector2 dir = des - (Vector2)transform.position;
             GetComponent<Animator>().SetFloat("DirX", dir.x);
@@ -69,6 +73,7 @@ public class PacmanMove : MonoBehaviour
     private bool valid(Vector2 dir)
     {
         Vector2 pos = transform.position;
+        // 注意：Linecast 检测路径上是否有障碍物
         RaycastHit2D hit = Physics2D.Linecast(pos + dir, pos);
         return (hit.collider == GetComponent<Collider2D>());
     }

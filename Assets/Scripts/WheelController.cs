@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PointerRotate : MonoBehaviour
 {
@@ -9,8 +8,9 @@ public class PointerRotate : MonoBehaviour
     public float rotationSpeed = 90f;
     private bool isRotating = true;
 
-    [Header("UI引用")]
-    public Image faceImage;
+    [Header("玩家引用")]
+    // 这里改成了 SpriteRenderer，用来控制场景中玩家的图片
+    public SpriteRenderer playerSpriteRenderer;
     public Sprite smileSprite;
     public Sprite crySprite;
 
@@ -22,34 +22,39 @@ public class PointerRotate : MonoBehaviour
             isRotating = !isRotating;
         }
 
-        // 2. 如果正在旋转，旋转指针而不是表盘
+        // 2. 如果正在旋转，旋转指针
         if (isRotating && pointerTransform != null)
         {
-            // 旋转指针的 Z 轴
             pointerTransform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
         }
 
-        // 3. 根据指针的角度更新表情
-        UpdateFaceStatus();
+        // 3. 根据指针的角度更新玩家的 Sprite
+        UpdatePlayerSprite();
     }
 
-    private void UpdateFaceStatus()
+    private void UpdatePlayerSprite()
     {
-        if (pointerTransform == null) return;
+        // 确保引用都存在
+        if (pointerTransform == null || playerSpriteRenderer == null) return;
 
         // 获取指针当前的 Z 轴角度
         float currentZ = pointerTransform.localEulerAngles.z;
 
-        // 逻辑保持不变：0-180度笑脸，180-360度哭脸
+        // 根据角度判断：0-180度显示笑脸，180-360度显示哭脸
         if (currentZ >= 0 && currentZ < 180)
         {
-            if (faceImage.sprite != smileSprite)
-                faceImage.sprite = smileSprite;
+            // 只有当图片不一样时才更换，节省性能
+            if (playerSpriteRenderer.sprite != smileSprite)
+            {
+                playerSpriteRenderer.sprite = smileSprite;
+            }
         }
         else
         {
-            if (faceImage.sprite != crySprite)
-                faceImage.sprite = crySprite;
+            if (playerSpriteRenderer.sprite != crySprite)
+            {
+                playerSpriteRenderer.sprite = crySprite;
+            }
         }
     }
 }
