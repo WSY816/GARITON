@@ -730,7 +730,6 @@ MonoBehaviour:
   CountDownPrefab: {fileID: 3365500225930935572, guid: f97cbcb88186ffd41ba68cd65f3ee031, type: 3}
   gameoverPrefab: {fileID: 1106736407958884811, guid: ce342c2445a163448bf5260c2b965fef, type: 3}
   winPrefab: {fileID: 3696446750341209364, guid: d9403a6470df86647b646b6a17fa1215, type: 3}
-  startClip: {fileID: 8300000, guid: bcb208340c51a0741b52a98272943c2a, type: 3}
   remainText: {fileID: 1268645410}
   scoreText: {fileID: 1411227045}
   eatText: {fileID: 1615556741}

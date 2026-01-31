@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     public GameObject CountDownPrefab;//游戏倒计时动画
     public GameObject gameoverPrefab;//游戏失败界面
     public GameObject winPrefab;//游戏成功界面
-    public AudioClip startClip;//游戏音乐
+    //public AudioClip startClip;//游戏音乐
     public Text remainText;
     public Text scoreText;
     public Text eatText;
@@ -115,7 +115,7 @@ public class GameManager : MonoBehaviour
     public void OnStartButtom()//按下开始游戏
     {
         PlayStart();
-        AudioSource.PlayClipAtPoint(startClip, new Vector3(0,0,-9));//播放开始音乐
+        //AudioSource.PlayClipAtPoint(startClip, new Vector3(0,0,-9));//播放开始音乐
         startPanel.SetActive(false);//按下开始游戏后开始界面隐藏
         
         
