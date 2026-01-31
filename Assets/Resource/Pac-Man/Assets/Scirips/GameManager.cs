@@ -46,6 +46,9 @@ public class GameManager : MonoBehaviour
     public float WaitTime;//倒计时的时间间隔
     public Transform countDownAnchor; // 倒计时出现的位置
 
+    [Header("迷宫")]
+    public string mazeName;//迷宫名称
+
     [SerializeField]
     private float CountDownScale = 1.5f; // 倒计时动画的缩放比例
 
@@ -64,11 +67,11 @@ public class GameManager : MonoBehaviour
             pathIndex.RemoveAt(randIndex);
         }
 
-        foreach (Transform t in GameObject.Find("Maze1").transform)//将迷宫所有豆子存入list中
+        foreach (Transform t in GameObject.Find(mazeName).transform)//将迷宫所有豆子存入list中
         {
             PacdotArr.Add(t.gameObject);
         }
-        pacdotNum = GameObject.Find("Maze1").transform.childCount;//Maze下所有孩子的数量
+        pacdotNum = GameObject.Find(mazeName).transform.childCount;//Maze下所有孩子的数量
 
     }
     private void Start()
