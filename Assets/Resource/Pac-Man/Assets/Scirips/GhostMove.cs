@@ -17,8 +17,7 @@ public class GhostMove : MonoBehaviour
 
     private void getPath(GameObject path)//获取到敌人具体的哪条路径
     {
-
-
+        Waypoint.Clear(); // 必须清空旧路径！
         foreach (Transform t in path.transform)
         {
 
@@ -40,7 +39,8 @@ public class GhostMove : MonoBehaviour
     }
 
     private void FixedUpdate()
-    {   
+    {
+        if (Waypoint.Count == 0) return;
         //敌人进行移动主代码
         if (transform.position != Waypoint[index])//如果没有到达目的路径点则继续进行移动
         {

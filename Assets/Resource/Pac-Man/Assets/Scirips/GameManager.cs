@@ -44,6 +44,10 @@ public class GameManager : MonoBehaviour
     [Header("UI引用")]
     public Image faceImage;        // 拖入 FaceDisplay 的 Image 组件
     public float WaitTime;//倒计时的时间间隔
+    public Transform countDownAnchor; // 倒计时出现的位置
+
+    [SerializeField]
+    private float CountDownScale = 1.5f; // 倒计时动画的缩放比例
 
 
     private void Awake()
@@ -60,11 +64,11 @@ public class GameManager : MonoBehaviour
             pathIndex.RemoveAt(randIndex);
         }
 
-        foreach (Transform t in GameObject.Find("Maze").transform)//将迷宫所有豆子存入list中
+        foreach (Transform t in GameObject.Find("Maze1").transform)//将迷宫所有豆子存入list中
         {
             PacdotArr.Add(t.gameObject);
         }
-        pacdotNum = GameObject.Find("Maze").transform.childCount;//Maze下所有孩子的数量
+        pacdotNum = GameObject.Find("Maze1").transform.childCount;//Maze下所有孩子的数量
 
     }
     private void Start()
@@ -132,12 +136,18 @@ public class GameManager : MonoBehaviour
 
             // 2. 产生倒计时/警告动画物体
             GameObject go = Instantiate(CountDownPrefab);
+            go.transform.localScale = Vector3.one * CountDownScale; // 可以调整大小
+
 
             // 3. 等待倒计时动画播放完毕（玩家在这3秒内必须变成笑脸）
             yield return new WaitForSeconds(3f);
 
             // 4. 倒计时物体消失
-            Destroy(go);
+            if (go != null)
+            {
+                go.SetActive(false); // 先隐藏
+                Destroy(go);        // 再销毁
+            }
 
             // 5. 【核心判断】：直接检测引用的 faceImage
             if (faceImage != null && faceImage.sprite != null)
@@ -243,5 +253,9 @@ public class GameManager : MonoBehaviour
         //Inky.GetComponent<GhostMove>().enabled = state;
     }
 
+    public void Win()
+    {
+        SceneManager.LoadScene("Game 1");
+    }
 
 }
