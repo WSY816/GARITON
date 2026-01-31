@@ -27,7 +27,7 @@ public class GhostMove : MonoBehaviour
         }
         //Waypoint.Insert(0, x);//插入起始位置
         //Waypoint.Add(x);//插入末尾位置
-  
+
         Debug.Log(path.gameObject.name);
 
     }

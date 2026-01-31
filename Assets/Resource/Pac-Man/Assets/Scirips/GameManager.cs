@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     //所以游戏对象
     public GameObject Pacman;
     public GameObject Binky;
-    //public GameObject Pinky;
+    public GameObject Pinky;
     //public GameObject Clyde;
     //public GameObject Inky;
 
@@ -264,24 +264,24 @@ public class GameManager : MonoBehaviour
     public void FreezeEnemy()//冻结敌人
     {
         Binky.GetComponent<GhostMove>().enabled = false;
-        //Pinky.GetComponent<GhostMove>().enabled = false;
+        Pinky.GetComponent<GhostMove>().enabled = false;
         //Clyde.GetComponent<GhostMove>().enabled = false;
         //Inky.GetComponent<GhostMove>().enabled = false;
 
         Binky.GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.7f, 0.7f, 0.7f);
-        //Pinky.GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.7f, 0.7f, 0.7f);
+        Pinky.GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.7f, 0.7f, 0.7f);
         //Clyde.GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.7f, 0.7f, 0.7f);
         //Inky.GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.7f, 0.7f, 0.7f);
     }
     public void DisFreeEnemy()//解冻敌人
     {
         Binky.GetComponent<GhostMove>().enabled = true;
-        //Pinky.GetComponent<GhostMove>().enabled = true;
+        Pinky.GetComponent<GhostMove>().enabled = true;
         //Clyde.GetComponent<GhostMove>().enabled = true;
         //Inky.GetComponent<GhostMove>().enabled = true;
 
         Binky.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
-        //Pinky.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+        Pinky.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
         //Clyde.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
         //Inky.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
     }
@@ -291,7 +291,7 @@ public class GameManager : MonoBehaviour
 
         Pacman.GetComponent<PacmanMove>().enabled = state;
         Binky.GetComponent<GhostMove>().enabled = state;
-        //Pinky.GetComponent<GhostMove>().enabled = state;
+        Pinky.GetComponent<GhostMove>().enabled = state;
         //Clyde.GetComponent<GhostMove>().enabled = state;
         //Inky.GetComponent<GhostMove>().enabled = state;
     }
