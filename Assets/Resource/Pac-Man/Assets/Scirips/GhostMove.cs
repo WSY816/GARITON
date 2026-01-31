@@ -31,7 +31,7 @@ public class GhostMove : MonoBehaviour
 
     private void Start()
     {
-        x = transform.position + new Vector3(0, 3, 0);//设置初始位置偏移值
+        //x = transform.position + new Vector3(0, 3, 0);//设置初始位置偏移值
 
         //起始位置避免重复路径
         getPath(paths[GameManager.Instance.usingIndex[GetComponent<SpriteRenderer>().sortingOrder - 1]]);
