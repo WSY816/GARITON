@@ -23,8 +23,19 @@ public class VideoManager : MonoBehaviour
 
     void OnVideoEnd(VideoPlayer videoPlayer)
     {
+        // 隐藏视频播放器对象本身
         this.gameObject.SetActive(false);
-        VideoButton.SetActive(false);
+
+        if (VideoButton != null)
+        {
+            VideoButton.SetActive(false);
+        }
+
+        // 调用 GameManager 开启黑屏模式
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.PrepareToStart();
+        }
     }
 
     public void PlayVideo()

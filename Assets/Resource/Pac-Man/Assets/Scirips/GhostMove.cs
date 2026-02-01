@@ -100,14 +100,14 @@ public class GhostMove : MonoBehaviour
                 collision.gameObject.SetActive(false);
                 GameManager.Instance.gamePanel.SetActive(false);
                 Instantiate(GameManager.Instance.gameoverPrefab);
-                Invoke("ReStart", 3f);
+                GameManager.Instance.Invoke("ReStart", 2.0f);
                 this.enabled = false;
             }
         }
     }
 
-    private void ReStart()
-    {
-        SceneManager.LoadScene(0);
-    }
+    //private void ReStart()
+    //{
+    //    SceneManager.LoadScene(0);
+    //}
 }

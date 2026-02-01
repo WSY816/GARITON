@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
     public SpriteRenderer playerSpriteRenderer; // 拖入玩家身上挂载 SpriteRenderer 的物体
     public float WaitTime;//倒计时的时间间隔
     public Transform countDownAnchor; // 倒计时出现的位置
+    public GameObject blackOverlay; // 拖入全屏黑色 Image 面板
 
     [Header("迷宫")]
     public string mazeName;//迷宫名称
@@ -114,11 +115,16 @@ public class GameManager : MonoBehaviour
 
     public void OnStartButtom()//按下开始游戏
     {
-        PlayStart();
         //AudioSource.PlayClipAtPoint(startClip, new Vector3(0,0,-9));//播放开始音乐
-        startPanel.SetActive(false);//按下开始游戏后开始界面隐藏
-        
-        
+
+        if (blackOverlay != null)
+        {
+            blackOverlay.SetActive(false); // 隐藏黑色遮罩，恢复画面
+        }
+
+        PlayStart();
+        startPanel.SetActive(false); // 隐藏开始界面
+
     }
 
     public void OnExitButtom()//按下退出游戏
@@ -203,6 +209,7 @@ public class GameManager : MonoBehaviour
         SetGameState(false);
         StopAllCoroutines();
         GetComponent<AudioSource>().Stop();
+        Invoke("ReStart", 2.0f);
     }
 
     // 当玩家因为任何原因死亡时调用
@@ -309,6 +316,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ReStart()
+    {
+        SceneManager.LoadScene(0);
+    }
 
-
+    // 给 VideoManager 调用
+    public void PrepareToStart()
+    {
+        if (blackOverlay != null)
+        {
+            blackOverlay.SetActive(true); // 显示全黑遮罩
+        }
+        startPanel.SetActive(true); // 显示开始按钮所在的面板
+    }
 }
