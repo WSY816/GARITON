@@ -141,26 +141,26 @@ public class GameManager : MonoBehaviour
         StartCoroutine(RepeatLoop());//开始木头人游戏倒计时循环
     }
 
-    IEnumerator RepeatLoop()//木头人游戏倒计时循环实现
+    IEnumerator RepeatLoop()
     {
         while (PlayAlive)
         {
-            // 1. 等待 WaitTime 秒，但期间要检查玩家是否还活着
+            // 1. 等待 WaitTime
             float timer = 0;
             while (timer < WaitTime)
             {
-                if (!PlayAlive) yield break; // 玩家在中途死了，直接退出协程
+                if (!PlayAlive) yield break;
                 timer += Time.deltaTime;
-                yield return null; // 每一帧检查一次
+                yield return null;
             }
 
-            // 2. 检查玩家是否还活着再生成
             if (!PlayAlive) yield break;
 
+            // 2. 生成倒计时
             currentCountDown = Instantiate(CountDownPrefab);
             currentCountDown.transform.localScale = Vector3.one * CountDownScale;
 
-            // 3. 等待倒计时动画播放（3秒），期间也要检查玩家是否还活着
+            // 3. 等待 3 秒动画
             float animTimer = 0;
             while (animTimer < 3f)
             {
@@ -173,61 +173,75 @@ public class GameManager : MonoBehaviour
                 yield return null;
             }
 
-            // 4. 时间到，销毁倒计时
-            if (currentCountDown != null)
-            {
-                Destroy(currentCountDown);
-            }
+            if (currentCountDown != null) Destroy(currentCountDown);
 
-            // 5. 【核心判断】：改为检测 SpriteRenderer
+            // 4. 【核心判断】
             if (playerSpriteRenderer != null && playerSpriteRenderer.sprite != null)
             {
-                // 检测玩家物体当前的 Sprite 名字是否为 "Cry"
+                // 添加一行调试日志，运行后看控制台输出什么名字
+                Debug.Log("当前玩家状态名: " + playerSpriteRenderer.sprite.name);
+
                 if (playerSpriteRenderer.sprite.name == "Cry")
                 {
-                    PlayAlive = false;
-                    OnGameOverByCryFace();
+                    // 不要在这里写 PlayAlive = false;
+                    OnGameOver();
                     yield break;
                 }
-            }
-            else
-            {
-                Debug.LogWarning("GameManager 上的 playerSpriteRenderer 引用丢失！");
             }
         }
     }
 
     // 游戏结束的逻辑
-    private void OnGameOverByCryFace()
+    public void OnGameOver()
     {
-        PlayAlive = false; // 确保状态更新
-        if (currentCountDown != null) Destroy(currentCountDown); // 清理
+        // 如果已经死过了，才返回
+        // 但如果还在运行，我们需要它继续往下走
+        if (PlayAlive == false && gamePanel.activeInHierarchy == false) return;
 
-        Debug.Log("检测到哭脸，游戏结束！");
+        PlayAlive = false; // 在这里统一修改状态
+
+        if (currentCountDown != null) Destroy(currentCountDown);
+
+        Debug.Log("执行 GameOver UI 流程");
+
         gamePanel.SetActive(false);
-        Instantiate(gameoverPrefab);
+
+        if (blackOverlay != null)
+        {
+            blackOverlay.SetActive(true);
+        }
+
+        if (gameoverPrefab != null)
+        {
+            Instantiate(gameoverPrefab);
+        }
+
         SetGameState(false);
-        StopAllCoroutines();
-        GetComponent<AudioSource>().Stop();
+        StopAllCoroutines(); // 注意：这会停止 RepeatLoop
+
+        if (GetComponent<AudioSource>() != null)
+        {
+            GetComponent<AudioSource>().Stop();
+        }
+
         Invoke("ReStart", 2.0f);
     }
 
-    // 当玩家因为任何原因死亡时调用
+    // 如果你有通过碰撞触发的死亡，也建议在 KillPlayer 中加入
     public void KillPlayer()
     {
         PlayAlive = false;
+        if (currentCountDown != null) Destroy(currentCountDown);
 
-        // 立即销毁当前的倒计时物体
-        if (currentCountDown != null)
-        {
-            Destroy(currentCountDown);
-        }
+        // 【新增】死亡时也显示黑幕
+        if (blackOverlay != null) blackOverlay.SetActive(true);
 
-        // 停止协程
         StopAllCoroutines();
 
-        // 执行其他的死亡逻辑（比如显示 GameOver 界面）
-        // OnGameOverByCryFace(); // 如果共用同一个界面可以调用这个
+        // 如果死亡也需要显示游戏失败界面：
+        gamePanel.SetActive(false);
+        Instantiate(gameoverPrefab);
+        SetGameState(false);
     }
 
     private void CreateSuperPacdot()//制造超级豆子

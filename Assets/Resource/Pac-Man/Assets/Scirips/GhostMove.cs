@@ -82,25 +82,30 @@ public class GhostMove : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.name == "Pacman")
         {
             if (GameManager.Instance.isSuperPacman)
             {
-                // 回到出生点
+                // 吃到超级豆子，幽灵回到出生点
                 gameObject.transform.position = x;
                 index = 0;
                 GameManager.Instance.score += 500;
             }
             else
             {
-                Debug.Log("Game Over");
-                GameManager.Instance.PlayAlive = false;
+                // 玩家死亡逻辑
+                Debug.Log("被幽灵碰撞，游戏结束");
+
+                // 1. 让玩家消失
                 collision.gameObject.SetActive(false);
-                GameManager.Instance.gamePanel.SetActive(false);
-                Instantiate(GameManager.Instance.gameoverPrefab);
-                GameManager.Instance.Invoke("ReStart", 2.0f);
+
+                // 2. 调用 GameManager 中统一的死亡处理函数
+                // 这个函数会自动：显示黑屏、弹出GameOver UI、停止音乐、2秒后重启
+                GameManager.Instance.OnGameOver();
+
+                // 3. 禁用当前幽灵的移动逻辑
                 this.enabled = false;
             }
         }
