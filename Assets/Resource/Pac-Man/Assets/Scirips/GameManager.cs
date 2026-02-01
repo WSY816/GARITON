@@ -203,6 +203,7 @@ public class GameManager : MonoBehaviour
         SetGameState(false);
         StopAllCoroutines();
         GetComponent<AudioSource>().Stop();
+        Invoke("ReStart", 2.0f);
     }
 
     // 当玩家因为任何原因死亡时调用
@@ -309,6 +310,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
+    public void ReStart()
+    {
+        SceneManager.LoadScene(0);
+    }
 
 }
