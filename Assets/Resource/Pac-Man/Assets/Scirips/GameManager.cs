@@ -57,6 +57,9 @@ public class GameManager : MonoBehaviour
     private float CountDownScale = 1.5f; // 倒计时动画的缩放比例
     private GameObject currentCountDown;//跟踪当前的倒计时物体
 
+    [Header("当前场景")]
+    public string CurrentName;
+
 
     private void Awake()
     {   
@@ -332,7 +335,15 @@ public class GameManager : MonoBehaviour
 
     public void ReStart()
     {
-        SceneManager.LoadScene(0);
+        // 如果没有输入名字，可以设置一个默认值，或者直接根据参数跳转
+        if (!string.IsNullOrEmpty(CurrentName))
+        {
+            SceneManager.LoadScene(CurrentName);
+        }
+        else
+        {
+            Debug.LogError("未指定要加载的场景名称！");
+        }
     }
 
     // 给 VideoManager 调用

@@ -1643,6 +1643,7 @@ MonoBehaviour:
   mazeName: TrueMaze
   PlayAlive: 1
   CountDownScale: 1
+  CurrentName: jhq
 --- !u!4 &375569953
 Transform:
   m_ObjectHideFlags: 0
@@ -2808,7 +2809,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &999322078
 RectTransform:
   m_ObjectHideFlags: 0
